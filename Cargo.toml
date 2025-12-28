@@ -5,6 +5,9 @@ members = [
     "render",
     "physics",
     "engine",
+    "sound",
+    "input",
+    "tests",
 ]
 
 [workspace.dependencies]

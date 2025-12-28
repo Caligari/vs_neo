@@ -11,6 +11,7 @@ pub use crate::math::spring::*;
 pub use crate::math::vector::*;
 
 pub type SharedTimeVal = Arc<Mutex<Option<u64>>>;
+pub type SharedTimeStep = Arc<Mutex<f32>>;
 
 #[cfg(test)]
 mod tests {

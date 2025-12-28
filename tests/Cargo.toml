@@ -1,9 +1,10 @@
 [package]
-name = "render"
+name = "tests"
 version = "0.0.0"
 edition = "2024"
 
 [dependencies]
 log = { workspace = true }
-sdl2 = { workspace = true }
-sdl2-sys = { workspace = true }
+engine = { path = "../engine"}
+
+serial_test = "3.2"

@@ -4,12 +4,12 @@ use std::{collections::HashMap, mem::transmute};
 
 use log::info;
 
+use render::renderer::WindowType;
+use render::screen::Screen;
 use sdl2::{Sdl, mouse::Cursor, mouse::SystemCursor};
 use sdl2_sys::{SDL_CreateSystemCursor, SDL_Cursor};
 
-use crate::Core;
-use crate::graphics::renderer::WindowType;
-use crate::graphics::screen::Screen;
+use crate::core::vs_core::Core;
 use crate::system_preferences::SystemPreferences;
 use common::math::random::Random;
 use common::utils::log::start_timer_log;

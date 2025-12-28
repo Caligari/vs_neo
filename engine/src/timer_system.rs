@@ -1,8 +1,8 @@
 use sdl2_sys::{SDL_Delay, SDL_GetPerformanceCounter, SDL_GetPerformanceFrequency};
 use std::sync::{Arc, Mutex};
 
-use crate::core::core_game_system::CoreGameSystem;
-use common::SharedTimeVal;
+use crate::core::{core_game::CoreGame, core_game_system::CoreGameSystem};
+use common::{SharedTimeStep, SharedTimeVal};
 
 // type LaunchTime = SharedTimeVal;
 
@@ -26,7 +26,7 @@ pub struct TimerSystem {
     // gpu_time: u64,
     first_frame: bool,
 
-    time_step: Arc<Mutex<f32>>,
+    time_step: SharedTimeStep,
 
     refresh_rate: Arc<Mutex<u16>>,
 }
@@ -54,7 +54,7 @@ impl CoreGameSystem for TimerSystem {
 
     fn deinit(&mut self) {}
 
-    fn update(&mut self, _core: &mut crate::CoreGame) {
+    fn update(&mut self, _core: &mut CoreGame) {
         let (now, round_time) = {
             let n = get_microseconds();
             let max_fps = *self
@@ -116,14 +116,14 @@ impl CoreGameSystem for TimerSystem {
         self.start_cpu = now;
     }
 
-    fn post_update(&mut self, _core: &mut crate::CoreGame) {
+    fn post_update(&mut self, _core: &mut CoreGame) {
         self.start_gather = get_microseconds();
     }
 }
 
 #[allow(dead_code)]
 impl TimerSystem {
-    pub fn new(refresh_rate: Arc<Mutex<u16>>, launch_time: LaunchTime) -> Self {
+    pub fn new(refresh_rate: Arc<Mutex<u16>>, launch_time: SharedTimeVal) -> Self {
         let microseconds = get_microseconds();
         *launch_time
             .lock()

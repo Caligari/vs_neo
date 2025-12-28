@@ -1,0 +1,100 @@
+       [              engine::system] [INFO] VectorStorm engine version r0.0.1
+       [              engine::system] [INFO] Initializing SDL
+       [  engine::system_preferences] [INFO] Checking supported resolutions...
+       [  engine::system_preferences] [INFO] Selected resolution 0 (width: 3440, height: 1440)
+       [              engine::system] [INFO] Init:  Initialising fullscreen window
+       [              render::screen] [INFO] Creating Screen...
+       [              render::screen] [DEBUG] Screen width before create renderer: 3440
+       [    render::renderer_opengl3] [INFO] SDL Runtime Version: 2.26.4
+       [    render::renderer_opengl3] [INFO] Found 1 displays:
+       [    render::renderer_opengl3] [INFO] Display #0 VA3456-WQHD (3440x1440)
+       [    render::renderer_opengl3] [INFO] videoFlag added: Fullscreen Desktop
+       [    render::renderer_opengl3] [INFO] SDL_CreateWindow 3440x1440x32 video mode, flags 4099
+       [              render::screen] [DEBUG] Width after: 3440
+       [              render::screen] [DEBUG] Screen Ratio: 2.3888888
+0.0003 [         serial_test::rwlock] [DEBUG] End serial
+       [              engine::system] [INFO] VectorStorm engine version r0.0.1
+       [              engine::system] [INFO] Initializing SDL
+       [  engine::system_preferences] [INFO] Checking supported resolutions...
+       [  engine::system_preferences] [INFO] Selected resolution 0 (width: 3440, height: 1440)
+       [              engine::system] [INFO] Init:  Initialising fullscreen window
+       [              render::screen] [INFO] Creating Screen...
+       [              render::screen] [DEBUG] Screen width before create renderer: 3440
+       [    render::renderer_opengl3] [INFO] SDL Runtime Version: 2.26.4
+       [    render::renderer_opengl3] [INFO] Found 1 displays:
+       [    render::renderer_opengl3] [INFO] Display #0 VA3456-WQHD (3440x1440)
+       [    render::renderer_opengl3] [INFO] videoFlag added: Fullscreen Desktop
+       [    render::renderer_opengl3] [INFO] SDL_CreateWindow 3440x1440x32 video mode, flags 4099
+       [              render::screen] [DEBUG] Width after: 3440
+       [              render::screen] [DEBUG] Screen Ratio: 2.3888888
+0.0000 [         serial_test::rwlock] [DEBUG] End serial
+       [              engine::system] [INFO] VectorStorm engine version r0.0.1
+       [              engine::system] [INFO] Initializing SDL
+       [  engine::system_preferences] [INFO] Checking supported resolutions...
+       [  engine::system_preferences] [INFO] Selected resolution 0 (width: 3440, height: 1440)
+       [              engine::system] [INFO] Init:  Initialising fullscreen window
+       [              render::screen] [INFO] Creating Screen...
+       [              render::screen] [DEBUG] Screen width before create renderer: 3440
+       [    render::renderer_opengl3] [INFO] SDL Runtime Version: 2.26.4
+       [    render::renderer_opengl3] [INFO] Found 1 displays:
+       [    render::renderer_opengl3] [INFO] Display #0 VA3456-WQHD (3440x1440)
+       [    render::renderer_opengl3] [INFO] videoFlag added: Fullscreen Desktop
+       [    render::renderer_opengl3] [INFO] SDL_CreateWindow 3440x1440x32 video mode, flags 4099
+       [              render::screen] [DEBUG] Width after: 3440
+       [              render::screen] [DEBUG] Screen Ratio: 2.3888888
+0.0000 [     engine::core::core_game] [INFO] in core game go
+0.0002 [          SimpleOneFrameGame] [INFO] in game code update
+0.0164 [         serial_test::rwlock] [DEBUG] End serial
+       [              engine::system] [INFO] VectorStorm engine version r0.0.1
+       [              engine::system] [INFO] Initializing SDL
+       [  engine::system_preferences] [INFO] Checking supported resolutions...
+       [  engine::system_preferences] [INFO] Selected resolution 0 (width: 3440, height: 1440)
+       [              engine::system] [INFO] Init:  Initialising fullscreen window
+       [              render::screen] [INFO] Creating Screen...
+       [              render::screen] [DEBUG] Screen width before create renderer: 3440
+       [    render::renderer_opengl3] [INFO] SDL Runtime Version: 2.26.4
+       [    render::renderer_opengl3] [INFO] Found 1 displays:
+       [    render::renderer_opengl3] [INFO] Display #0 VA3456-WQHD (3440x1440)
+       [    render::renderer_opengl3] [INFO] videoFlag added: Fullscreen Desktop
+       [    render::renderer_opengl3] [INFO] SDL_CreateWindow 3440x1440x32 video mode, flags 4099
+       [              render::screen] [DEBUG] Width after: 3440
+       [              render::screen] [DEBUG] Screen Ratio: 2.3888888
+0.0000 [         serial_test::rwlock] [DEBUG] End serial
+0.0003 [         serial_test::rwlock] [DEBUG] Serial acquire 0 
+0.0004 [         serial_test::rwlock] [DEBUG] Got serial ''
+0.0005 [          common::utils::log] [INFO] Log already started
+0.0006 [              engine::system] [INFO] VectorStorm engine version r0.0.1
+0.0007 [              engine::system] [INFO] Initializing SDL
+0.0050 [  engine::system_preferences] [INFO] Checking supported resolutions...
+0.0201 [  engine::system_preferences] [INFO] Selected resolution 0 (width: 3440, height: 1440)
+0.0203 [              engine::system] [INFO] Init:  Initialising fullscreen window
+0.0204 [              render::screen] [INFO] Creating Screen...
+0.0205 [              render::screen] [DEBUG] Screen width before create renderer: 3440
+0.0205 [    render::renderer_opengl3] [INFO] SDL Runtime Version: 2.26.4
+0.0219 [    render::renderer_opengl3] [INFO] Found 1 displays:
+0.0220 [    render::renderer_opengl3] [INFO] Display #0 VA3456-WQHD (3440x1440)
+0.0221 [    render::renderer_opengl3] [INFO] videoFlag added: Fullscreen Desktop
+0.0222 [    render::renderer_opengl3] [INFO] SDL_CreateWindow 3440x1440x32 video mode, flags 4099
+0.0876 [              render::screen] [DEBUG] Width after: 3440
+0.0878 [              render::screen] [DEBUG] Screen Ratio: 2.3888888
+0.0926 [     engine::core::core_game] [INFO] in core game go
+0.0928 [          SimpleOneFrameGame] [INFO] in game code update
+0.1097 [         serial_test::rwlock] [DEBUG] End serial
+0.1098 [         serial_test::rwlock] [DEBUG] Serial acquire 0 
+0.1100 [         serial_test::rwlock] [DEBUG] Got serial ''
+0.1101 [          common::utils::log] [INFO] Log already started
+0.1102 [              engine::system] [INFO] VectorStorm engine version r0.0.1
+0.1103 [              engine::system] [INFO] Initializing SDL
+0.1120 [  engine::system_preferences] [INFO] Checking supported resolutions...
+0.1278 [  engine::system_preferences] [INFO] Selected resolution 0 (width: 3440, height: 1440)
+0.1281 [              engine::system] [INFO] Init:  Initialising fullscreen window
+0.1282 [              render::screen] [INFO] Creating Screen...
+0.1283 [              render::screen] [DEBUG] Screen width before create renderer: 3440
+0.1283 [    render::renderer_opengl3] [INFO] SDL Runtime Version: 2.26.4
+0.1302 [    render::renderer_opengl3] [INFO] Found 1 displays:
+0.1303 [    render::renderer_opengl3] [INFO] Display #0 VA3456-WQHD (3440x1440)
+0.1304 [    render::renderer_opengl3] [INFO] videoFlag added: Fullscreen Desktop
+0.1306 [    render::renderer_opengl3] [INFO] SDL_CreateWindow 3440x1440x32 video mode, flags 4099
+0.1952 [              render::screen] [DEBUG] Width after: 3440
+0.1954 [              render::screen] [DEBUG] Screen Ratio: 2.3888888
+0.2034 [         serial_test::rwlock] [DEBUG] End serial

@@ -1,8 +1,10 @@
-pub mod display_list;
-pub mod renderer;
-pub mod renderer_opengl3;
-pub mod screen;
-pub mod shader_suite;
+use std::{cell::RefCell, rc::Rc};
+
+use crate::sound_system::SoundSystem;
+
+pub mod sound_system;
+
+pub type RefSoundSystem = Rc<RefCell<SoundSystem>>;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
