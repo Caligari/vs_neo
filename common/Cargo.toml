@@ -1,0 +1,16 @@
+[package]
+name = "common"
+version = "0.0.0"
+edition = "2024"
+
+
+[dependencies]
+log = { workspace = true }
+glam = "0.30"
+num = "0.4"
+fern = "0.7"
+indexmap = { workspace = true }
+turborand = "0.10"
+maths-rs = "0.2"
+derive_more = { version = "2.1", features = ["full"] }
+sdl2-sys = { workspace = true }

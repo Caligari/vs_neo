@@ -1,0 +1,11 @@
+[package]
+name = "engine"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+log = { workspace = true }
+indexmap = { workspace = true }
+common = { path = "../common" }
+sdl2-sys = { workspace = true }
+sdl2 = { workspace = true }
