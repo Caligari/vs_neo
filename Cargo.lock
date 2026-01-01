@@ -110,6 +110,7 @@ dependencies = [
  "render",
  "sdl2",
  "sdl2-sys",
+ "sdl2_backend",
  "sound",
 ]
 
@@ -520,6 +521,17 @@ dependencies = [
  "cmake",
  "libc",
  "version-compare",
+]
+
+[[package]]
+name = "sdl2_backend"
+version = "0.0.0"
+dependencies = [
+ "common",
+ "indexmap",
+ "log",
+ "sdl2",
+ "sdl2-sys",
 ]
 
 [[package]]

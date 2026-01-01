@@ -8,6 +8,7 @@ members = [
     "sound",
     "input",
     "tests",
+    "sdl2_backend",
 ]
 
 [workspace.dependencies]

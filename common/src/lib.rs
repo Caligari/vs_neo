@@ -1,6 +1,8 @@
+pub mod backend;
 pub mod color;
 pub mod math;
 pub mod utils;
+pub mod vs_error;
 
 use std::sync::Arc;
 use std::sync::Mutex;

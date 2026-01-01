@@ -1,12 +1,13 @@
-use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::{collections::HashMap, mem::transmute};
 
+use common::backend::Backend;
 use log::info;
 
 use render::renderer::WindowType;
 use render::screen::Screen;
-use sdl2::{Sdl, mouse::Cursor, mouse::SystemCursor};
+use sdl2::{mouse::Cursor, mouse::SystemCursor};
+use sdl2_backend::SDL2_Backend;
 use sdl2_sys::{SDL_CreateSystemCursor, SDL_Cursor};
 
 use crate::core::vs_core::Core;
@@ -22,7 +23,7 @@ pub const VS_VERSION: &str = "r0.0.1";
 pub struct System {
     show_cursor: bool,
     show_cursor_overridden: bool,
-    cursors: HashMap<SystemCursor, Cursor>,
+    cursors: HashMap<SystemCursor, Cursor>, // !! these need to be in backend? Or have VS structs
     cursors2: HashMap<SystemCursor, *mut SDL_Cursor>,
     focused: bool,
     visible: bool,
@@ -37,7 +38,8 @@ pub struct System {
     // launch_time: LaunchTime,
     system_preferences: SystemPreferences,
 
-    sdl: Rc<Sdl>,
+    // sdl: Rc<Sdl>,
+    backend: Box<dyn Backend>,
 
     pub random: Random,
 
@@ -57,12 +59,8 @@ impl System {
         // shadercache.startup()
         // shaderuniformregistry.startup()
 
-        // SDL
-        info!("Initializing SDL");
-        let sdl_context = match sdl2::init() {
-            Ok(context) => context,
-            Err(err) => panic!("Could not initialize SDL: {err}"),
-        };
+        // no need to do here, do in struct creation, below
+        // let backend = Box::new(SDL2_Backend::new());
 
         // init_phys_file_system(.. args ..)
         // preferences
@@ -82,7 +80,8 @@ impl System {
             data_is_pristine: false,
             system_preferences: SystemPreferences::new(),
             // time_since_launch: time_since_launch.clone(),  // do we need to store this, if we pass it away immediately?
-            sdl: Rc::new(sdl_context),
+            // sdl: Rc::new(sdl_context),
+            backend: Box::new(SDL2_Backend::new()),
             random: Random::new(),
             core: Core::new(launch_time.clone()),
         }
@@ -104,12 +103,7 @@ impl System {
         }
 
         // resolution
-        self.system_preferences.check_resolutions(
-            &self
-                .sdl
-                .video()
-                .expect("unable to access sdl video subsystem during system init"),
-        );
+        self.system_preferences.discover_resolutions(&self.backend);
 
         let (width, height) = if self.system_preferences.get_fullscreen() {
             self.system_preferences.get_resolution_extents()
@@ -132,12 +126,10 @@ impl System {
             ); // LOG
         }
 
-        // show cursor
-        self.show_cursor = !self.system_preferences.get_fullscreen();
-        self.sdl.mouse().show_cursor(self.show_cursor);
-
         // get show cursor from get fullscreen preference
-        self.sdl.mouse().show_cursor(self.show_cursor);
+        self.show_cursor = !self.system_preferences.get_fullscreen();
+        // self.sdl.mouse().show_cursor(self.show_cursor);
+        self.backend.show_cursor(self.show_cursor);
 
         // TODO: texture manager
 
@@ -161,7 +153,7 @@ impl System {
                 1
             });
         self.screen = Some(Screen::new(
-            self.sdl.clone(),
+            self.sdl.clone(), // need to pass backend here
             width,
             height,
             32,

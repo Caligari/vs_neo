@@ -1,12 +1,14 @@
+use common::backend::Backend;
+use common::vs_error::VSError;
 use core::fmt::Debug;
 use indexmap::IndexSet;
 use log::info;
-use sdl2::VideoSubsystem;
+use log::warn;
 
 use common::utils::preferences::PreferenceNumber;
 use common::utils::preferences::Preferences;
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct Resolution {
     width: PreferenceNumber,
     height: PreferenceNumber,
@@ -116,68 +118,89 @@ impl SystemPreferences {
         )
     }
 
-    pub fn check_resolutions(&mut self, video: &VideoSubsystem) {
+    pub fn discover_resolutions(&mut self, backend: &Box<dyn Backend>) -> Result<(), VSError> {
         info!("Checking supported resolutions...");
+        match backend.display_modes() {
+            Ok(display_modes) => {
+                // find w and h max and best resolution mode
+                let (max_width, max_height, best_res) = {
+                    let mut max_w = 0;
+                    let mut max_h = 0;
+                    let mut best_res = None;
 
-        // find w and h max and best resolution mode
-        let (max_width, max_height, best_res) = {
-            let num_modes = video
-                .num_display_modes(0)
-                .expect("unable to discover number of video modes in system check resolutions"); // !! assumes display 0
-            let mut resolutions = IndexSet::new();
-            let mut max_w = 0;
-            let mut max_h = 0;
-            let mut best_res = None;
+                    self.supported_resolutions = display_modes
+                        .iter()
+                        .map(|display_mode_info| {
+                            let res = Resolution {
+                                width: display_mode_info.width,
+                                height: display_mode_info.height,
+                            };
+                            if (res.width >= max_w) && (res.height >= max_h) {
+                                best_res = Some(res);
+                            }
+                            max_w = max_w.max(res.width);
+                            max_h = max_h.max(res.height);
+                            res
+                        })
+                        .collect::<IndexSet<Resolution>>()
+                        .drain(..)
+                        .collect();
+                    // println!("{:?}", self.supported_resolutions);
+                    (
+                        max_w as PreferenceNumber,
+                        max_h as PreferenceNumber,
+                        best_res,
+                    )
+                };
 
-            for mode in 0..num_modes {
-                let d_m = video
-                    .display_mode(0, mode)
-                    .expect("unable to get display mode info during system check resolutions");
-                let md = resolutions.len();
-                if resolutions.insert(Resolution {
-                    width: d_m.w as PreferenceNumber,
-                    height: d_m.h as PreferenceNumber,
-                }) {
-                    // only inserted if unique
-                    if (d_m.w >= max_w) && (d_m.h >= max_h) {
-                        best_res = Some(md);
+                self.preferences.constrain_number_preference(
+                    WINDOW_RESOLUTION_X,
+                    1280,
+                    0,
+                    max_width,
+                );
+                self.preferences.constrain_number_preference(
+                    WINDOW_RESOLUTION_Y,
+                    720,
+                    0,
+                    max_height,
+                );
+
+                // record which resolution to use
+                if let Some(using_res) = best_res {
+                    if let Some(res_num) = self
+                        .supported_resolutions
+                        .iter()
+                        .position(|r| *r == using_res)
+                    {
+                        self.preferences
+                            .set_number_preference(RESOLUTION_X, using_res.width);
+                        self.preferences
+                            .set_number_preference(RESOLUTION_Y, using_res.height);
+                        self.selected_resolution = Some(res_num);
+
+                        info!(
+                            "Selected resolution {} (width: {}, height: {})",
+                            res_num, using_res.width, using_res.height
+                        );
+
+                        Ok(())
+                    } else {
+                        Err(VSError::Backend_NoResolutionFound)
                     }
-                    max_w = max_w.max(d_m.w);
-                    max_h = max_h.max(d_m.h);
+                } else {
+                    // no resolution found
+                    Err(VSError::Backend_NoResolutionFound)
                 }
             }
-            self.supported_resolutions = resolutions.drain(..).collect(); // save resolution table
-            // println!("{:?}", self.supported_resolutions);
-            (
-                max_w as PreferenceNumber,
-                max_h as PreferenceNumber,
-                best_res,
-            )
-        };
 
-        self.preferences
-            .constrain_number_preference(WINDOW_RESOLUTION_X, 1280, 0, max_width);
-        self.preferences
-            .constrain_number_preference(WINDOW_RESOLUTION_Y, 720, 0, max_height);
-
-        // record which resolution to use
-        let using_res =
-            best_res.expect("did not find usable resolution when system checking resolutions");
-        let res = self
-            .supported_resolutions
-            .get(using_res)
-            .expect("unable to find selected resolution during system check resolutions");
-
-        self.preferences
-            .set_number_preference(RESOLUTION_X, res.width);
-        self.preferences
-            .set_number_preference(RESOLUTION_Y, res.height);
-        self.selected_resolution = best_res;
-
-        info!(
-            "Selected resolution {} (width: {}, height: {})",
-            using_res, res.width, res.height
-        );
+            Err(e) => {
+                warn!("no display modes discovered");
+                self.supported_resolutions = Vec::new();
+                self.selected_resolution = None;
+                Err(e)
+            }
+        }
     }
 }
 
