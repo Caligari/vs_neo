@@ -1,14 +1,12 @@
-use std::{rc::Rc, cell::RefCell};
+use std::{cell::RefCell, rc::Rc};
 
-use sdl2::Sdl;
+use common::backend::Backend;
 
-use super::{shader_suite::ShaderSuite, display_list::DisplayList};
-
+use super::{display_list::DisplayList, shader_suite::ShaderSuite};
 
 pub type WindowExtent = u16;
 pub type WindowDepth = u16;
 pub type WindowBuffers = u8;
-
 
 #[derive(Debug, Clone, Copy)]
 pub enum WindowType {
@@ -17,22 +15,38 @@ pub enum WindowType {
     FullscreenWindow,
 }
 
-
 pub trait Renderer {
     #[allow(clippy::too_many_arguments)]
-    fn new ( sdl: Rc<Sdl>, width: WindowExtent, height: WindowExtent, depth: WindowDepth, window_type: WindowType, buffer_count: WindowBuffers, antialias: bool, vsync: bool ) -> Self;
-    fn check_video_mode ( &self ) -> bool;
+    fn new(
+        backend: &Box<dyn Backend>,
+        width: WindowExtent,
+        height: WindowExtent,
+        depth: WindowDepth,
+        window_type: WindowType,
+        buffer_count: WindowBuffers,
+        antialias: bool,
+        vsync: bool,
+    ) -> Self;
+    fn check_video_mode(&self) -> bool;
     #[allow(clippy::too_many_arguments)]
-    fn update_video_mode ( &mut self, width: WindowExtent, height: WindowExtent, depth: WindowDepth, window_type: WindowType, buffer_count: WindowBuffers, antialias: bool, vsync: bool );
+    fn update_video_mode(
+        &mut self,
+        width: WindowExtent,
+        height: WindowExtent,
+        depth: WindowDepth,
+        window_type: WindowType,
+        buffer_count: WindowBuffers,
+        antialias: bool,
+        vsync: bool,
+    );
     // notify_resized ( width: u16, height: u16 );
-    fn pre_render ( &mut self, settings: &RenderSettings );
-    fn render_display_list ( &mut self, display_list: &DisplayList );
+    fn pre_render(&mut self, settings: &RenderSettings);
+    fn render_display_list(&mut self, display_list: &DisplayList);
     // fn raw_render_display_list ( display_list: &DisplayList );
-    fn post_render ( &mut self );
+    fn post_render(&mut self);
 
-    fn get_render_data ( &self ) -> Rc<RefCell<RendererData>>;
+    fn get_render_data(&self) -> Rc<RefCell<RendererData>>;
 }
-
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -73,11 +87,11 @@ pub struct RendererData {
     pub viewport_width_pixels: WindowExtent,
     pub viewport_height_pixels: WindowExtent,
 
-    pub refresh_rate: u16,    // ?? could this be u8
+    pub refresh_rate: u16, // ?? could this be u8
 }
 
 impl RendererData {
-    pub fn get_current_settings ( &self ) -> &RenderSettings {
+    pub fn get_current_settings(&self) -> &RenderSettings {
         &self.settings
     }
 

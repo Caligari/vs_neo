@@ -5,4 +5,5 @@ pub enum VSError {
     Backend_NoVideoModes,
     Backend_InvalidResolutionValue(i32),
     Backend_NoResolutionFound,
+    Backend_DisplayBoundsInfoMissing,
 }

@@ -4,14 +4,15 @@ use core::fmt::Debug;
 use indexmap::IndexSet;
 use log::info;
 use log::warn;
+use render::renderer::WindowExtent;
 
 use common::utils::preferences::PreferenceNumber;
 use common::utils::preferences::Preferences;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct Resolution {
-    width: PreferenceNumber,
-    height: PreferenceNumber,
+    width: WindowExtent,
+    height: WindowExtent,
 }
 
 pub struct SystemPreferences {
@@ -96,7 +97,7 @@ impl SystemPreferences {
             .expect("system unable to find high dpi setting")
     }
 
-    pub fn get_resolution_extents(&self) -> (PreferenceNumber, PreferenceNumber) {
+    pub fn get_resolution_extents(&self) -> (WindowExtent, WindowExtent) {
         let res = self
             .supported_resolutions
             .get(
@@ -104,17 +105,19 @@ impl SystemPreferences {
                     .expect("system has no selected resolution"),
             )
             .expect("system unable to find selected resolution");
-        (res.width, res.height)
+        (res.width as WindowExtent, res.height as WindowExtent)
     }
 
-    pub fn get_window_resolution_xy(&self) -> (PreferenceNumber, PreferenceNumber) {
+    pub fn get_window_resolution_xy(&self) -> (WindowExtent, WindowExtent) {
         (
             self.preferences
                 .get_number_preference(WINDOW_RESOLUTION_X)
-                .expect("system unable to find window resolution x setting"),
+                .expect("system unable to find window resolution x setting")
+                as WindowExtent,
             self.preferences
                 .get_number_preference(WINDOW_RESOLUTION_Y)
-                .expect("system unable to find window resolution y setting"),
+                .expect("system unable to find window resolution y setting")
+                as WindowExtent,
         )
     }
 
@@ -146,11 +149,7 @@ impl SystemPreferences {
                         .drain(..)
                         .collect();
                     // println!("{:?}", self.supported_resolutions);
-                    (
-                        max_w as PreferenceNumber,
-                        max_h as PreferenceNumber,
-                        best_res,
-                    )
+                    (max_w as WindowExtent, max_h as WindowExtent, best_res)
                 };
 
                 self.preferences.constrain_number_preference(

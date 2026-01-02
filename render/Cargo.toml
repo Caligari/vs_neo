@@ -7,3 +7,5 @@ edition = "2024"
 log = { workspace = true }
 sdl2 = { workspace = true }
 sdl2-sys = { workspace = true }
+
+common = { path = "../common" }

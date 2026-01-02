@@ -1,10 +1,11 @@
-use std::rc::Rc;
-
+use common::backend::Backend;
 use log::{debug, info};
-use sdl2::Sdl;
 
-use super::{renderer_opengl3::RendererOpenGL3, renderer::{Renderer, WindowType, WindowExtent, WindowDepth, WindowBuffers}, display_list::DisplayList};
-
+use super::{
+    display_list::DisplayList,
+    renderer::{Renderer, WindowBuffers, WindowDepth, WindowExtent, WindowType},
+    renderer_opengl3::RendererOpenGL3,
+};
 
 #[allow(dead_code)]
 pub struct Screen {
@@ -19,17 +20,35 @@ pub struct Screen {
     aspect_ratio: f32,
 
     fifo: DisplayList,
-
-    sdl: Rc<Sdl>,
+    // sdl: Rc<Sdl>,
 }
 
 impl Screen {
     #[allow(clippy::too_many_arguments)]
-    pub fn new ( sdl: Rc<Sdl>, width: WindowExtent, height: WindowExtent, depth: WindowDepth, window_type: WindowType, buffer_count: WindowBuffers, vsync: bool, antialias: bool, _high_dpi: bool ) -> Self {
+    pub fn new(
+        backend: &Box<dyn Backend>,
+        width: WindowExtent,
+        height: WindowExtent,
+        depth: WindowDepth,
+        window_type: WindowType,
+        buffer_count: WindowBuffers,
+        vsync: bool,
+        antialias: bool,
+        _high_dpi: bool,
+    ) -> Self {
         info!("Creating Screen...");
 
         debug!("Screen width before create renderer: {}", width);
-        let renderer = RendererOpenGL3::new(sdl.clone(), width, height, depth, window_type, buffer_count, antialias, vsync);
+        let renderer = RendererOpenGL3::new(
+            backend,
+            width,
+            height,
+            depth,
+            window_type,
+            buffer_count,
+            antialias,
+            vsync,
+        );
 
         let new_width = renderer.get_render_data().borrow().width;
         let new_height = renderer.get_render_data().borrow().height;
@@ -51,7 +70,7 @@ impl Screen {
             antialias,
             aspect_ratio,
             fifo,
-            sdl,
+            // sdl,
         }
     }
 }
