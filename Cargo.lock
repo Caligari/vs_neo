@@ -531,6 +531,7 @@ dependencies = [
  "common",
  "indexmap",
  "log",
+ "render",
  "sdl2",
  "sdl2-sys",
 ]

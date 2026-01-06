@@ -1,11 +1,12 @@
 use common::backend::Backend;
 use common::vs_error::VSError;
+use common::window::WindowExtent;
 use core::fmt::Debug;
 use indexmap::IndexSet;
 use log::info;
 use log::warn;
-use render::renderer::WindowExtent;
 
+#[allow(unused_imports)]
 use common::utils::preferences::PreferenceNumber;
 use common::utils::preferences::Preferences;
 

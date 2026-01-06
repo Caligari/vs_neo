@@ -1,6 +1,9 @@
 use std::fmt::Display;
 
-use crate::vs_error::VSError;
+use crate::{
+    vs_error::VSError,
+    window::{WindowBuffers, WindowDepth, WindowExtent, WindowType},
+};
 
 /// Defines the api for the backend
 ///
@@ -14,6 +17,17 @@ pub trait Backend {
     fn version(&self) -> BackendVersion;
     fn display_modes(&self) -> Result<Vec<DisplayModeInfo>, VSError>;
     fn display_bounds(&self) -> Result<Vec<DisplayBoundsInfo>, VSError>;
+
+    fn create_window(
+        &mut self,
+        width: WindowExtent,
+        height: WindowExtent,
+        depth: WindowDepth,
+        window_type: WindowType,
+        _buffer_count: WindowBuffers,
+        _antialiass: bool,
+        _vsyncnc: bool,
+    ) -> Result<(), VSError>;
 
     fn show_cursor(&mut self, show: bool);
 }

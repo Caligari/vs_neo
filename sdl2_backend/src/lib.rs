@@ -1,13 +1,19 @@
 use common::{
     backend::{Backend, BackendVersion, DisplayBoundsInfo, DisplayModeInfo},
     vs_error::VSError,
+    window::{WindowBuffers, WindowDepth, WindowExtent, WindowType},
 };
 use log::{error, info, warn};
-use sdl2::Sdl;
+use sdl2::{
+    Sdl,
+    video::{GLProfile, Window},
+};
+use sdl2_sys::SDL_WindowFlags;
 
 #[allow(non_camel_case_types)]
 pub struct SDL2_Backend {
     sdl_context: Sdl,
+    sdl_window: Option<Window>,
 }
 
 impl Backend for SDL2_Backend {
@@ -18,7 +24,10 @@ impl Backend for SDL2_Backend {
             Err(err) => panic!("Could not initialize SDL: {err}"),
         };
 
-        SDL2_Backend { sdl_context }
+        SDL2_Backend {
+            sdl_context,
+            sdl_window: None,
+        }
     }
 
     fn init(&mut self) {}
@@ -115,22 +124,91 @@ impl Backend for SDL2_Backend {
         Ok(list)
     }
 
+    fn create_window(
+        &mut self,
+        width: WindowExtent,
+        height: WindowExtent,
+        depth: WindowDepth,
+        window_type: WindowType,
+        _buffer_count: WindowBuffers,
+        _antialiass: bool,
+        _vsyncnc: bool,
+    ) -> Result<(), VSError> {
+        match &self.sdl_context.video() {
+            Ok(video_subsystem) => {
+                let video_flags = SDL_WindowFlags::SDL_WINDOW_OPENGL as u32
+                    | match window_type {
+                        WindowType::Fullscreen => {
+                            info!("videoFlag added: Fullscreen");
+                            SDL_WindowFlags::SDL_WINDOW_FULLSCREEN
+                        }
+                        WindowType::FullscreenWindow => {
+                            info!("videoFlag added: Fullscreen Desktop");
+                            SDL_WindowFlags::SDL_WINDOW_FULLSCREEN_DESKTOP
+                        }
+                        WindowType::Window => {
+                            info!("videoFlag added: Resizable");
+                            SDL_WindowFlags::SDL_WINDOW_RESIZABLE
+                        }
+                    } as u32;
+
+                let attributes = video_subsystem.gl_attr();
+                attributes.set_double_buffer(true);
+                attributes.set_red_size(8);
+                attributes.set_green_size(8);
+                attributes.set_blue_size(8);
+                attributes.set_alpha_size(8);
+                attributes.set_depth_size(0); // no depth buffer on our output target - we don't render to it directly
+                attributes.set_context_major_version(3);
+                attributes.set_context_minor_version(3);
+                attributes.set_context_profile(GLProfile::Core);
+                attributes.set_share_with_current_context(true);
+
+                info!(
+                    "SDL_CreateWindow {}x{}x{} video mode, flags {}",
+                    width, height, depth, video_flags
+                );
+
+                match video_subsystem
+                    .window("", width as u32, height as u32)
+                    .set_window_flags(video_flags)
+                    .build()
+                {
+                    Ok(sdl_window) => {
+                        self.sdl_window = Some(sdl_window);
+                        Ok(())
+                    }
+
+                    Err(e) => {
+                        error!("unable to build window during sdl2 window creation: {e}");
+                        Err(VSError::Backend_NoWindow)
+                    }
+                }
+            }
+
+            Err(e) => {
+                error!(
+                    "unable to find sdl video subsystem in sdl2 backend window creation: {}",
+                    e
+                );
+                Err(VSError::Backend_NoVideo)
+            }
+        }
+    }
+
     fn show_cursor(&mut self, show: bool) {
         self.sdl_context.mouse().show_cursor(show);
     }
 }
 
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
-
+// ====================================
+//
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[test]
     fn it_works() {
-        let result = add(2, 2);
+        let result = 2 + 2;
         assert_eq!(result, 4);
     }
 }

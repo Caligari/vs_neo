@@ -2,9 +2,9 @@ use std::sync::{Arc, Mutex};
 use std::{collections::HashMap, mem::transmute};
 
 use common::backend::Backend;
-use log::info;
+use common::window::WindowType;
+use log::{error, info};
 
-use render::renderer::WindowType;
 use render::screen::Screen;
 use sdl2::{mouse::Cursor, mouse::SystemCursor};
 use sdl2_backend::SDL2_Backend;
@@ -103,7 +103,12 @@ impl System {
         }
 
         // resolution
-        self.system_preferences.discover_resolutions(&self.backend);
+        if let Err(e) = self.system_preferences.discover_resolutions(&self.backend) {
+            error!(
+                "unable to discover resolutions when initializing system: {:?}",
+                e
+            );
+        };
 
         let (width, height) = if self.system_preferences.get_fullscreen() {
             self.system_preferences.get_resolution_extents()
@@ -153,7 +158,7 @@ impl System {
                 1
             });
         self.screen = Some(Screen::new(
-            self.sdl.clone(), // need to pass backend here
+            &mut self.backend, // need to pass backend here
             width,
             height,
             32,

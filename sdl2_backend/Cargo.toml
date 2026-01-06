@@ -10,3 +10,4 @@ sdl2-sys = { workspace = true }
 sdl2 = { workspace = true }
 
 common = { path = "../common" }
+render = { path = "../render" }

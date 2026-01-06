@@ -6,4 +6,5 @@ pub enum VSError {
     Backend_InvalidResolutionValue(i32),
     Backend_NoResolutionFound,
     Backend_DisplayBoundsInfoMissing,
+    Backend_NoWindow,
 }

@@ -3,6 +3,7 @@ pub mod color;
 pub mod math;
 pub mod utils;
 pub mod vs_error;
+pub mod window;
 
 use std::sync::Arc;
 use std::sync::Mutex;

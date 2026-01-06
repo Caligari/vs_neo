@@ -1,11 +1,10 @@
-use common::backend::Backend;
-use log::{debug, info};
-
-use super::{
-    display_list::DisplayList,
-    renderer::{Renderer, WindowBuffers, WindowDepth, WindowExtent, WindowType},
-    renderer_opengl3::RendererOpenGL3,
+use common::{
+    backend::Backend,
+    window::{WindowBuffers, WindowDepth, WindowExtent, WindowType},
 };
+use log::{debug, error, info};
+
+use super::{display_list::DisplayList, renderer::Renderer, renderer_opengl3::RendererOpenGL3};
 
 #[allow(dead_code)]
 pub struct Screen {
@@ -21,12 +20,13 @@ pub struct Screen {
 
     fifo: DisplayList,
     // sdl: Rc<Sdl>,
+    renderer: RendererOpenGL3, // how can we make this more independant?
 }
 
 impl Screen {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
-        backend: &Box<dyn Backend>,
+        backend: &mut Box<dyn Backend>,
         width: WindowExtent,
         height: WindowExtent,
         depth: WindowDepth,
@@ -50,8 +50,16 @@ impl Screen {
             vsync,
         );
 
-        let new_width = renderer.get_render_data().borrow().width;
-        let new_height = renderer.get_render_data().borrow().height;
+        let (new_width, new_height) = if let Some(renderer_data) = renderer.get_render_data() {
+            let new_width = renderer_data.borrow().width;
+            let new_height = renderer_data.borrow().height;
+
+            (new_width, new_height)
+        } else {
+            error!("no render data available, when creating Screen");
+            (1, 1) // bad default
+        };
+
         debug!("Width after: {}", new_width);
 
         let aspect_ratio = new_width as f32 / new_height as f32;
@@ -70,7 +78,7 @@ impl Screen {
             antialias,
             aspect_ratio,
             fifo,
-            // sdl,
+            renderer,
         }
     }
 }
