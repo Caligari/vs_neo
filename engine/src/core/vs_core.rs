@@ -6,7 +6,8 @@ use common::SharedTimeVal;
 
 use crate::core::core_game::*;
 use crate::core::core_game_registry::{CoreGameRegistry, GameId};
-use crate::new_RefTimerSystem;
+use crate::core::game_systems::GameSystems;
+use crate::timer_system::TimerSystem;
 // use crate::utils::preferences::Preferences;
 
 pub type GameSystemMap = Vec<Rc<RefCell<GameSystem>>>; // , CoreGameSystem>;
@@ -14,7 +15,7 @@ pub type GameSystemMap = Vec<Rc<RefCell<GameSystem>>>; // , CoreGameSystem>;
 pub struct Core {
     // !! game_heap: VSheap,  // trying not to need this
     pub game_registry: CoreGameRegistry,
-    pub game_systems: GameSystemMap,
+    pub game_systems: GameSystems,
 
     current_game: Option<GameId>,
     next_game: Option<GameId>,
@@ -31,7 +32,7 @@ impl Core {
     pub fn new(launch_time: SharedTimeVal) -> Self {
         Core {
             game_registry: CoreGameRegistry::default(),
-            game_systems: Vec::new(),
+            game_systems: GameSystems::new(),
             current_game: None,
             next_game: None,
             // preferences: Preferences::new(save_file),
@@ -48,9 +49,12 @@ impl Core {
     pub fn deinit(&mut self) {}
 
     fn create_game_systems(&mut self) {
-        let timer = new_RefTimerSystem(self.temp_refresh_rate.clone(), self.launch_time.clone());
-        self.game_systems
-            .push(Rc::new(RefCell::new(GameSystem::Timer(timer))));
+        // let timer = new_RefTimerSystem(self.temp_refresh_rate.clone(), self.launch_time.clone());
+        self.game_systems.set_timer(Box::new(TimerSystem::new(
+            self.temp_refresh_rate.clone(),
+            self.launch_time.clone(),
+        )));
+        // .push(Rc::new(RefCell::new(GameSystem::Timer(timer))));
         // TODO: create these systems
         // self.game_systems.insert(GameSystem::Timer, TimerSystem::new());
         // self.game_systems.insert(GameSystem::Input, InputSystem::new());
@@ -64,7 +68,7 @@ impl Core {
         main_game: bool,
         code: Box<dyn GameCode>,
     ) -> GameId {
-        let entry = CoreGame::new(name, code, &self.game_systems);
+        let entry = CoreGame::new(name, code, &mut self.game_systems);
         self.game_registry.register_game(entry, main_game)
     }
 
@@ -112,7 +116,7 @@ impl Core {
                     .game_registry
                     .get_game(current_game)
                     .expect("unable to find next game, when switching to next game");
-                game.go();
+                game.go(&mut self.game_systems);
                 self.exit = game.should_exit();
             }
         }

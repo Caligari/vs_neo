@@ -1,7 +1,12 @@
 use crate::{
-    RefGameSystem, RefTimerSystem,
-    core::{core_game_mode::*, core_game_system::CoreGameSystem, vs_core::GameSystemMap},
+    RefTimerSystem,
+    core::{
+        core_game_mode::*,
+        game_systems::{GameSystems, PrePostUpdate},
+    },
 };
+
+use common::GameSystemType;
 use input::RefInputSystem;
 use log::info;
 use physics::RefCollisionSystem;
@@ -28,7 +33,7 @@ pub struct CoreGame {
     pub name: String,
 
     // are these single-threaded? Do we need mutex?
-    game_system_order: Vec<RefGameSystem>, // [GameSystem; GameSystem::COUNT],  // alternate order for system
+    game_system_order: Vec<GameSystemType>, // [GameSystem; GameSystem::COUNT],  // alternate order for system
 
     frames_rendered: u64,
     start_ticks: u64,
@@ -44,25 +49,19 @@ pub struct CoreGame {
 }
 
 impl CoreGame {
-    pub fn new(name: &str, code: Box<dyn GameCode>, systems: &GameSystemMap) -> Self {
-        let mut t_step = None;
-        for s in systems.clone().iter() {
-            match &*s.borrow_mut() {
-                GameSystem::Timer(t) => {
-                    let timer = t.borrow_mut();
-                    let ts = timer.get_time_step_ref();
-                    t_step = Some(ts);
-                }
-                _ => (),
-            }
-        }
+    pub fn new(name: &str, code: Box<dyn GameCode>, systems: &mut GameSystems) -> Self {
+        let time_step = if let Some(timer) = systems.get_timer() {
+            Some(timer.get_time_step_ref())
+        } else {
+            None
+        };
         CoreGame {
             name: name.to_string(),
-            game_system_order: systems.clone(),
+            game_system_order: systems.system_order(),
             frames_rendered: 0,
             start_ticks: 0,
-            time_step: t_step
-                .expect("unable to get time_step from timer system on CoreGame creation"),
+            time_step: time_step
+                .expect("unable to get time_step from timer system on CoreGame creation"), // !! panics
             exit: false,
             first_frame: false,
             current_mode: None,
@@ -83,22 +82,13 @@ impl CoreGame {
         self.exit
     }
 
-    pub fn go(&mut self) {
+    pub fn go(&mut self, systems: &mut GameSystems) {
         self.frames_rendered += 1;
+        let system_order = self.game_system_order.clone();
 
         // update game systems
-        for system in self.game_system_order.clone().iter() {
-            match &*system.borrow_mut() {
-                GameSystem::Timer(t) => {
-                    let mut timer = t.borrow_mut();
-                    if timer.is_active() {
-                        timer.update(self);
-                    }
-                }
-
-                // TODO: Other systems
-                _ => (),
-            }
+        for system in system_order.iter() {
+            systems.update_system(*system, self, PrePostUpdate::PreUpdate);
         }
 
         info!("in core game go");
@@ -113,16 +103,8 @@ impl CoreGame {
         // ..
 
         // update game systems post update
-        for system in self.game_system_order.clone().iter() {
-            match &*system.borrow_mut() {
-                GameSystem::Timer(t) => {
-                    let mut timer = t.borrow_mut();
-                    if timer.is_active() {
-                        timer.update(self);
-                    }
-                }
-                _ => (),
-            }
+        for system in system_order.iter() {
+            systems.update_system(*system, self, PrePostUpdate::PostUpdate);
         }
 
         self.code.draw_frame();

@@ -15,3 +15,4 @@ input = { path = "../input" }
 sound = { path = "../sound" }
 render = { path = "../render" }
 sdl2_backend = { path = "../sdl2_backend" }
+elsa = { version = "1.11", features = ["indexmap"] }

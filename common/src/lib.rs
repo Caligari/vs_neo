@@ -16,6 +16,15 @@ pub use crate::math::vector::*;
 pub type SharedTimeVal = Arc<Mutex<Option<u64>>>;
 pub type SharedTimeStep = Arc<Mutex<f32>>;
 
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
+pub enum GameSystemType {
+    Timer,
+    Input,
+    Collision,
+    Sound,
+    User(&'static str),
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
