@@ -1,5 +1,3 @@
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 
 use common::SharedTimeVal;
@@ -9,8 +7,6 @@ use crate::core::core_game_registry::{CoreGameRegistry, GameId};
 use crate::core::game_systems::GameSystems;
 use crate::timer_system::TimerSystem;
 // use crate::utils::preferences::Preferences;
-
-pub type GameSystemMap = Vec<Rc<RefCell<GameSystem>>>; // , CoreGameSystem>;
 
 pub struct Core {
     // !! game_heap: VSheap,  // trying not to need this

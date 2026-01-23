@@ -1,25 +1,11 @@
-use crate::{
-    RefTimerSystem,
-    core::{
-        core_game_mode::*,
-        game_systems::{GameSystems, PrePostUpdate},
-    },
+use crate::core::{
+    core_game_mode::*,
+    game_systems::{GameSystems, PrePostUpdate},
 };
 
 use common::GameSystemType;
-use input::RefInputSystem;
 use log::info;
-use physics::RefCollisionSystem;
-use sound::RefSoundSystem;
 use std::sync::{Arc, Mutex};
-
-#[derive(Clone)]
-pub enum GameSystem {
-    Timer(RefTimerSystem),
-    Input(RefInputSystem),
-    Collision(RefCollisionSystem),
-    Sound(RefSoundSystem),
-}
 
 pub trait GameCode {
     fn update(&mut self, delta: f32);
