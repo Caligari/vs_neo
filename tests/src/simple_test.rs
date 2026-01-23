@@ -4,75 +4,83 @@ use serial_test::serial;
 
 use crate::simple_data;
 
-#[test]
-#[serial]
-#[should_panic(expected = "No main menu game has been defined")]
-fn no_main_menu() {
-    let mut system = System::new("Test No Main", 1);
+#[cfg(test)]
+mod tests {
+    use engine::system::System;
+    use serial_test::serial;
 
-    system.init();
+    use crate::simple_data;
 
-    let core = &mut system.core;
+    #[test]
+    #[serial]
+    #[should_panic(expected = "No main menu game has been defined")]
+    fn no_main_menu() {
+        let mut system = System::new("Test No Main", 1);
 
-    let main_game = core
-        .game_registry
-        .get_main_menu_gameid()
-        .expect("No main menu game has been defined"); // required text for test to fail/succeed
-    core.set_game(main_game);
+        system.init();
 
-    core.go();
+        let core = &mut system.core;
 
-    core.deinit();
-}
+        let main_game = core
+            .game_registry
+            .get_main_menu_gameid()
+            .expect("No main menu game has been defined"); // required text for test to fail/succeed
+        core.set_game(main_game);
 
-#[test]
-#[serial]
-fn all_but_go() {
-    let mut system = System::new("Test No Run", 1);
+        core.go();
 
-    system.init();
+        core.deinit();
+    }
 
-    let core = &mut system.core;
+    #[test]
+    #[serial]
+    fn all_but_go() {
+        let mut system = System::new("Test No Run", 1);
 
-    let _main_game_id = core.register_game(
-        "Main Menu",
-        true,
-        Box::new(simple_data::SimpleOneFrameGame {}),
-    );
+        system.init();
 
-    let main_game = core
-        .game_registry
-        .get_main_menu_gameid()
-        .expect("No main menu game has been defined");
-    core.set_game(main_game);
+        let core = &mut system.core;
 
-    // core.go();
+        let _main_game_id = core.register_game(
+            "Main Menu",
+            true,
+            Box::new(simple_data::SimpleOneFrameGame {}),
+        );
 
-    core.deinit();
-}
+        let main_game = core
+            .game_registry
+            .get_main_menu_gameid()
+            .expect("No main menu game has been defined");
+        core.set_game(main_game);
 
-#[test]
-#[serial]
-fn base_main_menu() {
-    let mut system = System::new("Test One Frame", 1);
+        // core.go();
 
-    system.init();
+        core.deinit();
+    }
 
-    let core = &mut system.core;
+    #[test]
+    #[serial]
+    fn base_main_menu() {
+        let mut system = System::new("Test One Frame", 1);
 
-    let _main_game_id = core.register_game(
-        "Main Menu",
-        true,
-        Box::new(simple_data::SimpleOneFrameGame {}),
-    );
+        system.init();
 
-    let main_game = core
-        .game_registry
-        .get_main_menu_gameid()
-        .expect("No main menu game has been defined");
-    core.set_game(main_game);
+        let core = &mut system.core;
 
-    core.go();
+        let _main_game_id = core.register_game(
+            "Main Menu",
+            true,
+            Box::new(simple_data::SimpleOneFrameGame {}),
+        );
 
-    core.deinit();
+        let main_game = core
+            .game_registry
+            .get_main_menu_gameid()
+            .expect("No main menu game has been defined");
+        core.set_game(main_game);
+
+        core.go();
+
+        core.deinit();
+    }
 }

@@ -5,8 +5,7 @@ use crate::{
     window::{WindowBuffers, WindowDepth, WindowExtent, WindowType},
 };
 
-/// Defines the api for the backend
-///
+// Defines the api for the backend
 
 pub trait Backend {
     fn new() -> Self

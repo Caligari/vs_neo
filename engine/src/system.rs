@@ -103,7 +103,10 @@ impl System {
         }
 
         // resolution
-        if let Err(e) = self.system_preferences.discover_resolutions(&self.backend) {
+        if let Err(e) = self
+            .system_preferences
+            .discover_resolutions(self.backend.as_mut())
+        {
             error!(
                 "unable to discover resolutions when initializing system: {:?}",
                 e

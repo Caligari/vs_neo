@@ -32,7 +32,7 @@ impl Core {
     pub fn new(launch_time: SharedTimeVal) -> Self {
         Core {
             game_registry: CoreGameRegistry::default(),
-            game_systems: GameSystems::new(),
+            game_systems: GameSystems::default(),
             current_game: None,
             next_game: None,
             // preferences: Preferences::new(save_file),

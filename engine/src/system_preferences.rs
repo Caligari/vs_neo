@@ -122,7 +122,7 @@ impl SystemPreferences {
         )
     }
 
-    pub fn discover_resolutions(&mut self, backend: &Box<dyn Backend>) -> Result<(), VSError> {
+    pub fn discover_resolutions(&mut self, backend: &dyn Backend) -> Result<(), VSError> {
         info!("Checking supported resolutions...");
         match backend.display_modes() {
             Ok(display_modes) => {

@@ -10,18 +10,20 @@ use crate::{
 pub struct GameSystems {
     systems: FrozenIndexMap<GameSystemType, Box<dyn CoreGameSystem>>,
     systems_order: Vec<GameSystemType>,
-    timer: Option<Box<TimerSystem>>, // reference with lifetime?
+    timer: Option<Box<dyn CoreGameSystem>>, // reference with lifetime?
 }
 
-impl GameSystems {
-    pub fn new() -> Self {
+impl Default for GameSystems {
+    fn default() -> Self {
         GameSystems {
             systems: FrozenIndexMap::new(),
             systems_order: Vec::new(),
             timer: None,
         }
     }
+}
 
+impl GameSystems {
     pub fn set_timer(&mut self, timer: Box<TimerSystem>) -> Result<(), VSError> {
         if self.timer.is_none() {
             self.timer = Some(timer);
@@ -52,45 +54,38 @@ impl GameSystems {
         game: &mut CoreGame,
         pre_post: PrePostUpdate,
     ) -> Result<(), VSError> {
-        match system_type {
-            GameSystemType::Timer => {
-                if let Some(system_boxed) = self.timer.as_mut() {
-                    if system_boxed.is_active() {
-                        if pre_post == PrePostUpdate::PreUpdate {
-                            Ok(system_boxed.update(game))
-                        } else {
-                            Ok(system_boxed.post_update(game))
-                        }
-                    } else {
-                        Ok(())
-                    }
-                } else {
-                    Err(VSError::Core_SystemNotFound(system_type))
-                }
-            }
+        let Some(system) = (match system_type {
+            GameSystemType::Timer => self.timer.as_mut(),
             // GameSystemType::Collision => ,
             // GameSystemType::Input => ,
             // GameSystemType::Sound => ,
-            _ => {
-                if let Some(system_boxed) = self.systems.as_mut().get_mut(&system_type) {
-                    if system_boxed.is_active() {
-                        if pre_post == PrePostUpdate::PreUpdate {
-                            Ok(system_boxed.update(game))
-                        } else {
-                            Ok(system_boxed.post_update(game))
-                        }
-                    } else {
-                        Ok(())
-                    }
-                } else {
-                    Err(VSError::Core_SystemNotFound(system_type))
+            _ => self.systems.as_mut().get_mut(&system_type),
+        }) else {
+            return Err(VSError::Core_SystemNotFound(system_type));
+        };
+
+        if system.is_active() {
+            match pre_post {
+                PrePostUpdate::PreUpdate => {
+                    system.update(game);
+                    Ok(())
+                }
+                PrePostUpdate::PostUpdate => {
+                    system.post_update(game);
+                    Ok(())
                 }
             }
+        } else {
+            Ok(())
         }
     }
 
-    pub fn get_timer(&mut self) -> Option<&TimerSystem> {
-        self.timer.as_deref()
+    pub fn get_timer(&mut self) -> Option<&mut TimerSystem> {
+        if self.timer.is_some() {
+            self.timer.as_mut().unwrap().downcast_mut::<TimerSystem>()
+        } else {
+            None
+        }
     }
 
     pub fn system_order(&self) -> Vec<GameSystemType> {

@@ -50,11 +50,7 @@ pub struct CoreGame {
 
 impl CoreGame {
     pub fn new(name: &str, code: Box<dyn GameCode>, systems: &mut GameSystems) -> Self {
-        let time_step = if let Some(timer) = systems.get_timer() {
-            Some(timer.get_time_step_ref())
-        } else {
-            None
-        };
+        let time_step = systems.get_timer().map(|t| t.get_time_step_ref());
         CoreGame {
             name: name.to_string(),
             game_system_order: systems.system_order(),
