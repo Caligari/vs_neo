@@ -1,0 +1,11 @@
+[package]
+name = "wgpu_backend"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+log = { workspace = true }
+winit = { version = "0.30", features = ["android-native-activity"] }
+wgpu = "28.0"
+common = { path = "../common" }
+render = { path = "../render" }

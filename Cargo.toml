@@ -9,6 +9,7 @@ members = [
     "input",
     "tests",
     "sdl2_backend",
+    "wgpu_backend",
 ]
 
 [workspace.dependencies]
